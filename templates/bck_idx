@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompter Pro | Generator Konten Video Marketing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        .result-section {
+            transition: all 0.3s ease;
+        }
+        .result-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            resize: none;
+        }
+        .copy-notification {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .show-notification {
+            opacity: 1;
+        }
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f3f3f3;
+            border-radius: 3px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .loading-steps {
+            text-align: left;
+            margin: 1rem 0;
+        }
+        .loading-step {
+            margin: 0.5rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .loading-step.active {
+            color: #6366f1;
+            font-weight: 500;
+        }
+        .loading-step.completed {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen pb-20">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-6 md:mb-0">
+                        <h1 class="text-3xl font-bold"><i class="fas fa-robot mr-2"></i> AI Prompter Pro Veo 3</h1>
+                        <p class="text-indigo-100 mt-1">Generator Profesional untuk Konten Video Marketing & Promosi Produk</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                        <p class="text-sm"><i class="fas fa-bolt mr-1"></i> Powered by Veo 3</p>
+                        <p class="text-xs text-indigo-100 mt-1">Optimized for VEO 3, CapCut & TikTok</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 mt-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form Section -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-md p-6 sticky top-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-cogs mr-2 text-primary"></i> Konfigurasi Konten
+                        </h2>
+                        
+                        <form id="generateForm" method="POST" enctype="multipart/form-data">
+                            <!-- Product Name -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-box-open mr-1 text-primary"></i> Nama Produk
+                                </label>
+                                <input type="text" name="nama_produk" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    placeholder="Contoh: Sepatu Sneaker Premium"
+                                    value="{{ form_data.nama_produk if form_data else '' }}">
+                            </div>
+
+                                                        <!-- Video Reference -->
+                                                        <div class="mb-6">
+                                                            <label for="video_reference" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                                                                <i class="fas fa-video mr-2 text-indigo-500"></i> Referensi Video (opsional)
+                                                            </label>
+                                                            <input type="url" id="video_reference" name="video_reference" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Masukkan URL video TikTok atau YouTube" pattern="https?://(www\.)?(tiktok\.com|youtube\.com|youtu\.be)/.*" />
+                                                            <p class="text-xs text-gray-500 mt-1">URL video akan dianalisis untuk referensi konten. Hanya mendukung TikTok & YouTube.</p>
+                                                            <p id="video-url-error" class="text-xs text-red-500 mt-1 hidden">URL harus dari TikTok atau YouTube.</p>
+                                                        </div>
+                            <!-- Brand Name -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-copyright mr-1 text-primary"></i> Nama Brand (opsional)
+                                </label>
+                                <input type="text" name="brand_name"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    placeholder="Contoh: BrandKeren"
+                                    value="{{ form_data.brand_name if form_data else '' }}">
+                            </div>
+                            <!-- Brand Logo -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-image mr-1 text-primary"></i> Logo Brand (opsional)
+                                </label>
+                                <input type="file" name="brand_logo" accept="image/*"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            </div>
+                            
+                            <!-- Niche -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-tags mr-1 text-primary"></i> Niche Market
+                                </label>
+                                <select name="niche" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    {% for niche in niches %}
+                                    <option value="{{ niche.value }}" {% if form_data and form_data.niche==niche.value %}selected{% endif %}>
+                                        {{ niche.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Tone -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-theater-masks mr-1 text-primary"></i> Tone Video
+                                </label>
+                                <select name="tone" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    {% for tone in tones %}
+                                    <option value="{{ tone.value }}" {% if form_data and form_data.tone==tone.value %}selected{% endif %}>
+                                        {{ tone.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Duration -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-clock mr-1 text-primary"></i> Durasi Video
+                                </label>
+                                <select name="durasi" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    {% for durasi in durations %}
+                                    <option value="{{ durasi }}" {% if form_data and form_data.durasi==durasi %}selected{% endif %}>
+                                        {{ durasi }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Aspect Ratio -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-expand mr-1 text-primary"></i> Aspect Ratio
+                                </label>
+                                <select name="aspect_ratio" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    {% for ratio in aspect_ratios %}
+                                    <option value="{{ ratio }}" {% if form_data and form_data.aspect_ratio==ratio %}selected{% endif %}>
+                                        {{ ratio }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Language -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-language mr-1 text-primary"></i> Bahasa
+                                </label>
+                                <select name="language" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                                    {% for lang in languages %}
+                                    <option value="{{ lang }}" {% if form_data and form_data.language==lang %}selected{% endif %}>
+                                        {{ lang }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+
+                            
+                            <button type="submit" 
+                                class="w-full gradient-bg text-white py-3 px-4 rounded-lg font-semibold hover:opacity-90 transition-all shadow-md">
+                                <i class="fas fa-magic mr-2"></i> Generate Konten
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Results Section -->
+                <div class="lg:col-span-2">
+                    <div id="hasil-generator"></div>
+                    {% if result %}
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                        <!-- Result Header -->
+                        <div class="gradient-bg text-white px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                {% if result.brand_logo %}
+                                <img src="{{ result.brand_logo }}" alt="Logo Brand" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-contain bg-white" style="background: #fff;">
+                                {% endif %}
+                                <div>
+                                    <h2 class="text-xl font-semibold flex items-center">
+                                        <i class="fas fa-file-alt mr-2"></i> Hasil Generator
+                                    </h2>
+                                    {% if result.brand_name %}
+                                    <div class="text-sm text-indigo-100 font-semibold mt-1 flex items-center">
+                                        <i class="fas fa-copyright mr-1"></i> {{ result.brand_name }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="text-sm bg-white/20 px-3 py-1 rounded-full">
+                                Dibuat: {{ result.generated_at }}
+                            </div>
+                        </div>
+                        
+                        <!-- Project Info -->
+                        <div class="border-b border-gray-200 px-6 py-4 bg-gray-50">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Produk</p>
+                                    <p class="font-medium">{{ form_data.nama_produk }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Niche</p>
+                                    <p class="font-medium">{{ niches|selectattr('value', 'equalto', form_data.niche)|map(attribute='label')|first }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Tone</p>
+                                    <p class="font-medium">{{ tones|selectattr('value', 'equalto', form_data.tone)|map(attribute='label')|first }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Durasi</p>
+                                    <p class="font-medium">{{ form_data.durasi }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Analysis -->
+                        {% if result.video_analysis %}
+                        <div class="result-section border-b border-gray-200 px-6 py-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-chart-bar mr-2 text-orange-500"></i> Analisis Video Referensi
+                                </h3>
+                                <button onclick="copyToClipboard('video-analysis')" 
+                                    class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all">
+                                    <i class="far fa-copy mr-1"></i> Salin
+                                </button>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-gray-700 mb-2">Informasi Video</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Judul</p>
+                                            <p class="font-medium">{{ result.video_analysis.video_info.title }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Platform</p>
+                                            <p class="font-medium">{{ result.video_analysis.video_info.platform }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <textarea id="video-analysis" class="w-full bg-transparent text-gray-700" rows="8" readonly>{{ result.video_analysis.analysis }}</textarea>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- VEO Prompt -->
+                        <div class="result-section border-b border-gray-200 px-6 py-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-film mr-2 text-purple-500"></i> Prompt VEO 3
+                                </h3>
+                                <button onclick="copyToClipboard('veo-prompt')" 
+                                    class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all">
+                                    <i class="far fa-copy mr-1"></i> Salin
+                                </button>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <textarea id="veo-prompt" class="w-full bg-transparent text-gray-700" rows="6" readonly>{{ result.veo_prompt }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Narration -->
+                        <div class="result-section border-b border-gray-200 px-6 py-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-comment-dots mr-2 text-blue-500"></i> Narasi Video
+                                </h3>
+                                <button onclick="copyToClipboard('narration')" 
+                                    class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all">
+                                    <i class="far fa-copy mr-1"></i> Salin
+                                </button>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <textarea id="narration" class="w-full bg-transparent text-gray-700" rows="4" readonly>{{ result.narration }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Caption -->
+                        <div class="result-section border-b border-gray-200 px-6 py-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center"><i class="fas fa-hashtag mr-2 text-pink-500"></i> Caption & Hashtag</h3>
+                                <button onclick="copyToClipboard('caption')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all"><i class="far fa-copy mr-1"></i> Salin</button>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div id="caption-hashtag-wrap"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- CTA -->
+                        <div class="result-section px-6 py-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-bullhorn mr-2 text-green-500"></i> Call-to-Action
+                                </h3>
+                                <button onclick="copyToClipboard('cta')" 
+                                    class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all">
+                                    <i class="far fa-copy mr-1"></i> Salin
+                                </button>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <textarea id="cta" class="w-full bg-transparent text-gray-700" rows="4" readonly>{{ result.cta }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="downloadResults()"
+                                    class="flex-1 bg-primary hover:bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center">
+                                    <i class="fas fa-file-download mr-2"></i> Download Semua (.txt)
+                                </button>
+                                <button onclick="copyAllResults()"
+                                    class="flex-1 bg-secondary hover:bg-purple-600 text-white py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center">
+                                    <i class="fas fa-copy mr-2"></i> Salin Semua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notification -->
+                    <div id="copy-notification" class="copy-notification fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+                        <i class="fas fa-check-circle mr-2"></i> Berhasil disalin!
+                    </div>
+                    {% else %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-xl shadow-md p-12 text-center">
+                        <div class="mx-auto w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
+                            <i class="fas fa-robot text-4xl text-primary"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">AI Prompter Pro Siap Membantu!</h3>
+                        <p class="text-gray-600 mb-6">Isi formulir di sebelah kiri untuk menghasilkan konten video marketing profesional untuk produk berkualitas baik.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-2xl mx-auto">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mb-2 text-primary">
+                                    <i class="fas fa-film"></i>
+                                </div>
+                                <p class="font-medium">Prompt VEO 3</p>
+                                <p class="text-sm text-gray-600">Optimized untuk video AI</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mb-2 text-primary">
+                                    <i class="fas fa-comment-alt"></i>
+                                </div>
+                                <p class="font-medium">Narasi Video</p>
+                                <p class="text-sm text-gray-600">Sesuai durasi & tone</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mb-2 text-primary">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <p class="font-medium">Caption & Hashtag</p>
+                                <p class="text-sm text-gray-600">Siap untuk TikTok/IG/YT/FB</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Generating Content...</h3>
+            <p class="text-gray-600 mb-1">Estimated time: <span id="estimatedTime">30</span> seconds</p>
+            <p class="text-xs text-gray-500 mb-3">Proses generate membutuhkan waktu 5 sampai 15 menit tergantung antrian server AI.</p>
+            <p class="text-xs text-gray-500 mb-3">Proses generate ditambahkan Link memakan waktu lebih lama.</p>
+            <div class="progress-bar">
+                <div id="progressBarFill" class="progress-bar-fill"></div>
+            </div>
+            
+            <div class="loading-steps">
+                <div id="stepVEO" class="loading-step">Generating VEO Prompt...</div>
+                <div id="stepNarration" class="loading-step">Preparing Narration...</div>
+                <div id="stepCaption" class="loading-step">Creating Caption & Hashtags...</div>
+                <div id="stepCTA" class="loading-step">Finalizing Call-to-Action...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(id) {
+            const element = document.getElementById(id);
+            element.select();
+            document.execCommand('copy');
+            
+            // Show notification
+            const notification = document.getElementById('copy-notification');
+            notification.classList.add('show-notification');
+            setTimeout(() => {
+                notification.classList.remove('show-notification');
+            }, 2000);
+        }
+        
+        function copyAllResults() {
+            const content = `=== PROMPT VEO 3 ===\n${document.getElementById('veo-prompt').value}\n\n` +
+                           `=== NARASI VIDEO ===\n${document.getElementById('narration').value}\n\n` +
+                           `=== CAPTION & HASHTAG ===\n${document.getElementById('caption').value}\n\n` +
+                           `=== CALL-TO-ACTION ===\n${document.getElementById('cta').value}`;
+            
+            navigator.clipboard.writeText(content).then(() => {
+                const notification = document.getElementById('copy-notification');
+                notification.classList.add('show-notification');
+                setTimeout(() => {
+                    notification.classList.remove('show-notification');
+                }, 2000);
+            });
+        }
+        
+        function downloadResults() {
+            const data = {
+                nama_produk: "{{ form_data.nama_produk if form_data else '' }}",
+                niche_label: "{{ niches|selectattr('value', 'equalto', form_data.niche if form_data else '')|map(attribute='label')|first }}",
+                tone_label: "{{ tones|selectattr('value', 'equalto', form_data.tone if form_data else '')|map(attribute='label')|first }}",
+                durasi: "{{ form_data.durasi if form_data else '' }}",
+                aspect_ratio: "{{ form_data.aspect_ratio if form_data else '' }}",
+                language: "{{ form_data.language if form_data else '' }}",
+                veo_prompt: document.getElementById('veo-prompt').value,
+                narration: document.getElementById('narration').value,
+                caption: document.getElementById('caption').value.split('\n')[0],
+                hashtags: document.getElementById('caption').value.split('\n').slice(1).join('\n'),
+                cta: document.getElementById('cta').value,
+                generated_at: "{{ result.generated_at if result else '' }}"
+            };
+            
+            fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `AI_Prompter_Pro_${data.nama_produk.replace(/ /g, '_')}_${new Date().toISOString().slice(0,10)}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            });
+        }
+
+        // Add loading overlay functionality
+        function showLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            const progressBar = document.getElementById('progressBarFill');
+            const estimatedTime = document.getElementById('estimatedTime');
+            const steps = {
+                veo: document.getElementById('stepVEO'),
+                narration: document.getElementById('stepNarration'),
+                caption: document.getElementById('stepCaption'),
+                cta: document.getElementById('stepCTA')
+            };
+            
+            overlay.style.display = 'flex';
+            let progress = 0;
+            const totalSteps = 4;
+            const stepDuration = 7500; // 7.5 seconds per step
+            const totalDuration = stepDuration * totalSteps;
+            
+            // Update progress bar
+            const progressInterval = setInterval(() => {
+                progress += (100 / (totalDuration / 100));
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+            }, 100);
+            
+            // Update steps
+            setTimeout(() => {
+                steps.veo.classList.add('completed');
+                steps.narration.classList.add('active');
+            }, stepDuration);
+            
+            setTimeout(() => {
+                steps.narration.classList.add('completed');
+                steps.caption.classList.add('active');
+            }, stepDuration * 2);
+            
+            setTimeout(() => {
+                steps.caption.classList.add('completed');
+                steps.cta.classList.add('active');
+            }, stepDuration * 3);
+            
+            setTimeout(() => {
+                steps.cta.classList.add('completed');
+                clearInterval(progressInterval);
+            }, totalDuration);
+            
+            // Update estimated time
+            let timeLeft = totalDuration / 1000;
+            const timeInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft < 0) timeLeft = 0;
+                estimatedTime.textContent = Math.ceil(timeLeft);
+            }, 1000);
+            
+            return {
+                hide: () => {
+                    clearInterval(progressInterval);
+                    clearInterval(timeInterval);
+                    overlay.style.display = 'none';
+                    // Reset steps
+                    Object.values(steps).forEach(step => {
+                        step.classList.remove('active', 'completed');
+                    });
+                    progressBar.style.width = '0%';
+                }
+            };
+        }
+
+        // Fungsi generateStep agar bisa dipanggil window.generateStep di event submit form
+        window.generateStep = async function(step, loading) {
+            // Update step aktif di loading overlay
+            if (typeof setActiveStep === 'function') setActiveStep(step);
+            const form = document.getElementById('generateForm');
+            const fd = new FormData(form);
+            fd.append('step', step);
+            let resp = await fetch('/generate_step', { method: 'POST', body: fd });
+            let data = await resp.json();
+            if (data.success) {
+                if (typeof updateProgressBar === 'function') updateProgressBar(step, data.elapsed);
+                if (typeof updateEstimatedTime === 'function') updateEstimatedTime(data.all_status);
+            }
+            return data;
+        }
+
+        // Ganti submit form menjadi AJAX dinamis per step
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('[DEBUG] Form submitted');
+            const loading = showLoadingOverlay();
+            // Step 1: INIT
+            const form = e.target;
+            const formData = new FormData(form);
+            formData.append('step', 'init');
+            let resp = await fetch('/generate_step', { method: 'POST', body: formData });
+            let data = await resp.json();
+            console.log('[DEBUG] Step init response:', data);
+            if (!data.success) {
+                loading.hide();
+                alert('Gagal memulai generate.');
+                return;
+            }
+            // Step 2: VEO
+            const veo = await window.generateStep('veo', loading); console.log('[DEBUG] Step veo:', veo);
+            // Step 3: Narration
+            const narration = await window.generateStep('narration', loading); console.log('[DEBUG] Step narration:', narration);
+            // Step 4: Caption
+            const caption = await window.generateStep('caption', loading); console.log('[DEBUG] Step caption:', caption);
+            // Step 5: CTA
+            const final = await window.generateStep('cta', loading); console.log('[DEBUG] Step cta:', final);
+            loading.hide();
+            if (final && final.all_status) {
+                // Gabungkan hasil dari semua step
+                const status = final.all_status;
+                console.log('[DEBUG] Render with all_status:', status);
+                renderResult({
+                    veo_prompt: status.veo.result,
+                    narration: status.narration.result,
+                    caption: status.caption.result,
+                    cta: status.cta.result,
+                    generated_at: status.generated_at,
+                    brand_name: status.brand_name,
+                    brand_logo: status.brand_logo
+                });
+            } else if (final && final.veo_prompt && final.narration && final.caption && final.cta) {
+                // Jika hasil sudah lengkap di step init
+                console.log('[DEBUG] Render with final direct:', final);
+                renderResult({
+                    veo_prompt: final.veo_prompt,
+                    narration: final.narration,
+                    caption: final.caption,
+                    cta: final.cta,
+                    generated_at: final.generated_at || '',
+                    brand_name: final.brand_name || '',
+                    brand_logo: final.brand_logo || ''
+                });
+            } else {
+                alert('Terjadi kesalahan saat generate konten. Data: ' + JSON.stringify(final));
+            }
+        });
+
+        // Fungsi untuk render hasil generate ke halaman
+        function renderResult(result) {
+            const resultSection = document.getElementById('hasil-generator');
+            console.log('renderResult called', result);
+            console.log('resultSection', resultSection);
+            if (!resultSection) { alert('resultSection not found!'); return; }
+            if (!result || !result.veo_prompt || !result.narration || !result.caption || !result.cta) {
+                alert('Data hasil kosong atau tidak lengkap: ' + JSON.stringify(result));
+                return;
+            }
+            resultSection.innerHTML = `
+            <div class="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+                <div class="gradient-bg text-white px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        ${result.brand_logo ? `<img src="${result.brand_logo}" alt="Logo Brand" class="w-12 h-12 rounded-full border-2 border-white shadow-md object-contain bg-white" style="background: #fff;">` : ''}
+                        <div>
+                            <h2 class="text-xl font-semibold flex items-center">
+                                <i class="fas fa-file-alt mr-2"></i> Hasil Generator
+                            </h2>
+                            ${result.brand_name ? `<div class="text-sm text-indigo-100 font-semibold mt-1 flex items-center"><i class="fas fa-copyright mr-1"></i> ${result.brand_name}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="text-sm bg-white/20 px-3 py-1 rounded-full">
+                        Dibuat: ${result.generated_at}
+                    </div>
+                </div>
+                <div class="border-b border-gray-200 px-6 py-4 bg-gray-50">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div><p class="text-gray-500">Produk</p><p class="font-medium">${document.querySelector('[name=nama_produk]').value}</p></div>
+                        <div><p class="text-gray-500">Niche</p><p class="font-medium">${document.querySelector('[name=niche]').selectedOptions[0].textContent}</p></div>
+                        <div><p class="text-gray-500">Tone</p><p class="font-medium">${document.querySelector('[name=tone]').selectedOptions[0].textContent}</p></div>
+                        <div><p class="text-gray-500">Durasi</p><p class="font-medium">${document.querySelector('[name=durasi]').value}</p></div>
+                    </div>
+                </div>
+                <div class="result-section border-b border-gray-200 px-6 py-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center"><i class="fas fa-film mr-2 text-purple-500"></i> Prompt VEO 3</h3>
+                        <button onclick="copyToClipboard('veo-prompt')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all"><i class="far fa-copy mr-1"></i> Salin</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <textarea id="veo-prompt" class="w-full bg-transparent text-gray-700" rows="6" readonly>${result.veo_prompt}</textarea>
+                    </div>
+                </div>
+                <div class="result-section border-b border-gray-200 px-6 py-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center"><i class="fas fa-comment-dots mr-2 text-blue-500"></i> Narasi Video</h3>
+                        <button onclick="copyToClipboard('narration')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all"><i class="far fa-copy mr-1"></i> Salin</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <textarea id="narration" class="w-full bg-transparent text-gray-700" rows="4" readonly>${result.narration}</textarea>
+                    </div>
+                </div>
+                <div class="result-section border-b border-gray-200 px-6 py-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center"><i class="fas fa-hashtag mr-2 text-pink-500"></i> Caption & Hashtag</h3>
+                        <button onclick="copyToClipboard('caption')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all"><i class="far fa-copy mr-1"></i> Salin</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div id="caption-hashtag-wrap"></div>
+                    </div>
+                </div>
+                <div class="result-section px-6 py-5">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center"><i class="fas fa-bullhorn mr-2 text-green-500"></i> Call-to-Action</h3>
+                        <button onclick="copyToClipboard('cta')" class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-lg text-gray-700 transition-all"><i class="far fa-copy mr-1"></i> Salin</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <textarea id="cta" class="w-full bg-transparent text-gray-700" rows="4" readonly>${result.cta}</textarea>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="downloadResults()" class="flex-1 bg-primary hover:bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center"><i class="fas fa-file-download mr-2"></i> Download Semua (.txt)</button>
+                        <button onclick="copyAllResults()" class="flex-1 bg-secondary hover:bg-purple-600 text-white py-3 px-4 rounded-lg font-medium transition-all flex items-center justify-center"><i class="fas fa-copy mr-2"></i> Salin Semua</button>
+                    </div>
+                </div>
+            </div>
+            <div id="copy-notification" class="copy-notification fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg"><i class="fas fa-check-circle mr-2"></i> Berhasil disalin!</div>
+            `;
+
+            // Pisahkan caption dan hashtag jika ada
+            const captionWrap = document.getElementById('caption-hashtag-wrap');
+            if (captionWrap && result.caption) {
+                // Deteksi baris hashtag
+                let captionText = result.caption;
+                let hashtagText = '';
+                if (captionText.includes('Hashtag:')) {
+                    const parts = captionText.split('Hashtag:');
+                    captionText = parts[0].trim();
+                    hashtagText = parts[1].trim();
+                } else if ((captionText.match(/#/g) || []).length > 2) {
+                    // Jika ada banyak #, pisahkan baris pertama sebagai caption, sisanya hashtag
+                    const lines = captionText.split('\n');
+                    captionText = lines[0];
+                    hashtagText = lines.slice(1).join(' ');
+                }
+                // Selalu tampilkan label dan kolom hashtag jika ada hashtag
+                captionWrap.innerHTML = `<div class='mb-2'><label class='block text-xs text-gray-500 mb-1'>Caption:</label><textarea id='caption' class='w-full bg-transparent text-gray-700' rows='2' readonly>${captionText}</textarea></div>`;
+                if (hashtagText) {
+                    captionWrap.innerHTML += `<div class='mt-2'><label class='block text-xs text-gray-500 mb-1'>Hashtag:</label><textarea id='hashtag' class='w-full bg-transparent text-gray-700' rows='2' readonly>${hashtagText}</textarea></div>`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
